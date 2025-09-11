@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
     <body>
-        <form>
+        <form onsubmit="onSubmitHandler(event)">
             <label for="product">Product Name</label>
             <input id="product" name="productName"/>
             <button type="submit">Add Product</button>
         </form>
+        <script src="/js/product.js"></script>
+        <script src="https://unpkg.com/axios@1.6.7/dist/axios.min.js"></script>
     </body>
 </html>
