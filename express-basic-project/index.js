@@ -6,13 +6,12 @@ const port = 3000;
 const adminRoutes = require('./routes/admin');
 const contactRoutes = require('./routes/contact');
 const shopRoutes = require('./routes/shop');
+const successController = require('./controllers/successController');
 app.use(bodyParser.urlencoded({extended: false}));
 
 app.use('/admin',adminRoutes);
 app.use('/contactus',contactRoutes);
-app.get('/success',(req,res)=>{
-    res.send(`<h1>Form successfuly filled</h1>`)
-})
+app.get('/success',successController.successMsg);
 app.use(shopRoutes);
 
 
