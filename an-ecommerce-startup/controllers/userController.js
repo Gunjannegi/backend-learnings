@@ -1,14 +1,16 @@
+const {sendResponse} = require('../utils/response');
+
 const getAllUsers = (req,res)=>{
-    res.send("Fetching all users.")
+    sendResponse(res,"Fetching all users.",200)
 };
 
 const addUser = (req,res)=>{
-    res.send("Adding a new user.")
+    sendResponse(res,"Adding a new user.",201)
 };
 
 const getUserById = (req,res)=>{
     const id = req.params.id;
-    res.send(`Fetching user with ID: ${id}`);
+    sendResponse(res,`Fetching user with ID: ${id}`,200);
 };
 
 module.exports = {getAllUsers, addUser, getUserById};
