@@ -1,3 +1,4 @@
+const { IdentityCard } = require('../models');
 const Students = require('../models/student');
 const getAllStudents = (req, res) => {
     const fetchQuery = `SELECT * FROM Students`;
@@ -24,6 +25,16 @@ const addStudent = async (req, res) => {
         res.status(500).send('Unable to make an entry.');
     }
 };
+
+const addingValuesToStudentAndIdentityTable = async(req,res)=>{
+    try{
+      const student = await Students.create(req.body.students);
+      const idCard = await IdentityCard.create({...req.body.IdentityCard , StudentId:student.id});
+      res.status(201).json({student,idCard})
+    }catch(err){
+      res.status(500).json({error:err.message});
+    }
+}
 
 const getStudentById = (req, res) => {
     const { id } = req.params;
@@ -101,4 +112,4 @@ const deleteStudent = async(req, res) => {
     // })
 };
 
-module.exports = { getAllStudents, addStudent, getStudentById, updateStudent, deleteStudent }
+module.exports = { getAllStudents, addStudent, getStudentById, updateStudent, deleteStudent, addingValuesToStudentAndIdentityTable }
