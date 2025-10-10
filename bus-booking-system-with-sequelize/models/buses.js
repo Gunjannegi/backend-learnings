@@ -2,14 +2,14 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../utils/db-connection');
 
 const Bus = sequelize.define('Buses', {
-    busId: {
+    id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false
     },
     busNumber: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: false
     },
     totalSeats: {
