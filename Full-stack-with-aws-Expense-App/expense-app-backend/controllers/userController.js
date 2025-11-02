@@ -3,8 +3,7 @@ const User = require("../models/user");
 const addUser = async (req, res) => {
     try {
         const { username, useremail, userpassword } = req.body;
-        const checkUser = await User.findOne({ where:{useremail} });
-        console.log(checkUser)
+        const checkUser = await User.findOne({ where: { useremail } });
 
         if (checkUser) {
             return res.status(409).send({ message: "User already exist", data: checkUser });
@@ -23,4 +22,21 @@ const addUser = async (req, res) => {
 
 };
 
-module.exports = {addUser}
+const loginUser = async (req, res) => {
+    try {
+        const { useremail, userpassword } = req.body;
+        const checkUser = await User.findOne({ where: { useremail } });
+
+        if (checkUser) {
+            if(checkUser.userpassword !== userpassword){
+                return res.status(401).send({ message: "Unauthorized User" });
+            }
+            return res.status(200).send({ message: "User is successfully logged in" });
+        };
+        res.status(404).send({ message: "User not found" });
+    } catch (err) {
+        res.status(500).send(err)
+    }
+};
+
+module.exports = { addUser, loginUser }
