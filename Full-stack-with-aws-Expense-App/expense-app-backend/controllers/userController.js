@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const bcrypt = require('bcrypt');
 
 const addUser = async (req, res) => {
     try {
@@ -8,14 +9,18 @@ const addUser = async (req, res) => {
         if (checkUser) {
             return res.status(409).send({ message: "User already exist", data: checkUser });
         };
-        const user = await User.create({
-            username: username,
-            useremail: useremail,
-            userpassword: userpassword
-        });
-        if (user) {
-            res.status(201).send({ message: "User is successfully added", data: user });
-        }
+        bcrypt.hash(userpassword, 10, async (err, hash) => {
+            console.log(err);
+            const user = await User.create({
+                username: username,
+                useremail: useremail,
+                userpassword: hash
+            });
+            if (user) {
+                res.status(201).send({ message: "User is successfully added", data: user });
+            }
+        })
+
     } catch (err) {
         res.status(500).send(err)
     }
@@ -26,14 +31,17 @@ const loginUser = async (req, res) => {
     try {
         const { useremail, userpassword } = req.body;
         const checkUser = await User.findOne({ where: { useremail } });
+        if (!checkUser) {
+            return res.status(404).send({ message: "User not found" });
+        }
 
-        if (checkUser) {
-            if(checkUser.userpassword !== userpassword){
-                return res.status(401).send({ message: "Unauthorized User" });
-            }
+        const isMatch = await bcrypt.compare(userpassword, checkUser.userpassword);
+
+        if (isMatch) {
             return res.status(200).send({ message: "User is successfully logged in" });
-        };
-        res.status(404).send({ message: "User not found" });
+        } else {
+            return res.status(401).send({ message: "Invalid credentials" });
+        }
     } catch (err) {
         res.status(500).send(err)
     }
