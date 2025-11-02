@@ -17,7 +17,6 @@ function App() {
           const response = await fetch(`http://localhost:3000/post/getAllPosts`);
           const data = await response.json();
           setPosts(data);
-          console.log(data);
       }
 
   const handleLink = (e) => {
