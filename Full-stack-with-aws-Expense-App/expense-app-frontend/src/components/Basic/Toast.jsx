@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { RiInformationLine } from "react-icons/ri";
 
 const Toast = ({ message, type = "success", onClose }) => {
     useEffect(() => {
@@ -12,8 +13,9 @@ const Toast = ({ message, type = "success", onClose }) => {
     const bgColor = type === "error" ? "bg-red-500" : "bg-green-500";
     return (
         <div
-            className={`fixed bottom-5 right-5 ${bgColor} text-white px-4 py-2 rounded shadow-lg`}
+            className={`flex items-center gap-1 fixed bottom-5 right-5 ${bgColor} text-white px-4 py-2 rounded shadow-lg`}
         >
+            <RiInformationLine />
             {message}
         </div>
     )

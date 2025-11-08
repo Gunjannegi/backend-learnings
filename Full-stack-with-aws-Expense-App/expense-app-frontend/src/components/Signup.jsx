@@ -45,7 +45,7 @@ const Signup = () => {
 
     return (
         <div className="min-h-[90vh] w-full flex justify-center items-center m-0">
-            <form className="border p-6 border-gray-300 rounded-lg w-[300px]" onSubmit={handleSubmit}>
+            <form className="border p-6 border-gray-300 rounded-lg w-[300px] bg-white" onSubmit={handleSubmit}>
                 <div className="flex flex-col mb-2 gap-1">
                     <label className="font-medium">Full Name</label>
                     <input onChange={handleName} value={username} className="appearance-none border border-gray-300 rounded-md p-1" required />
