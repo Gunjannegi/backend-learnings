@@ -2,9 +2,10 @@ const Expense = require("../models/expense");
 
 const addExpense = async (req, res) => {
     try {
+        const userId = req.user.id;
         const { description, amount, date, category } = req.body;
         const expense = await Expense.create({
-            description, amount, date, category
+            description, amount, date, category, UserId:userId
         })
         if (expense) {
             res.status(201).send({ message: "Expense is successfully added", data: expense })
@@ -17,7 +18,8 @@ const addExpense = async (req, res) => {
 
 const getAllExpenses = async (req, res) => {
     try {
-        const expenses = await Expense.findAll();
+        const userId = req.user.id;
+        const expenses = await Expense.findAll({where:{UserId:userId}});
         if (expenses) {
             return res.status(200).send({ message: "Expenses are fetched successfully", data: expenses })
         }
@@ -29,7 +31,11 @@ const getAllExpenses = async (req, res) => {
 const deleteExpense = async (req, res) => {
     try {
         const { id } = req.params;
-        const deletedExpense = await Expense.destroy({ where: { id } });
+        const userId = req.user.id
+        if(!userId){
+            res.status(400).send({message:"Missing userId in headers"})
+        }
+        const deletedExpense = await Expense.destroy({ where: { id, userId } });
         if (deletedExpense === 0) {
             res.status(404).send({ message: "Expense not found" });
         };

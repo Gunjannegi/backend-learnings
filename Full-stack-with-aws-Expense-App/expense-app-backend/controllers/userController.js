@@ -1,5 +1,6 @@
 const User = require("../models/user");
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const addUser = async (req, res) => {
     try {
@@ -10,7 +11,6 @@ const addUser = async (req, res) => {
             return res.status(409).send({ message: "User already exist", data: checkUser });
         };
         bcrypt.hash(userpassword, 10, async (err, hash) => {
-            console.log(err);
             const user = await User.create({
                 username: username,
                 useremail: useremail,
@@ -27,6 +27,10 @@ const addUser = async (req, res) => {
 
 };
 
+const generateAccessToken = (id,email) =>{
+    return jwt.sign({userId : id, email:email},"98789d8cedf2f9a86af5391")
+};
+
 const loginUser = async (req, res) => {
     try {
         const { useremail, userpassword } = req.body;
@@ -38,7 +42,8 @@ const loginUser = async (req, res) => {
         const isMatch = await bcrypt.compare(userpassword, checkUser.userpassword);
 
         if (isMatch) {
-            return res.status(200).send({ message: "User is successfully logged in" });
+
+            return res.status(200).send({ message: "User is successfully logged in", token: generateAccessToken(checkUser.id, useremail) });
         } else {
             return res.status(401).send({ message: "Invalid credentials" });
         }

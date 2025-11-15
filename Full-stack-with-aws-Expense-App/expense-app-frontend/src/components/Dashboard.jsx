@@ -12,6 +12,7 @@ const Dashboard = () => {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
+                    'Authorization': localStorage.getItem('token')
                 },
             });
 
@@ -36,6 +37,7 @@ const Dashboard = () => {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
+                    'Authorization': localStorage.getItem('token')
                 },
             });
 

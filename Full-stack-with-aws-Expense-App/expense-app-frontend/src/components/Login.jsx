@@ -1,12 +1,14 @@
 import { useState } from "react";
 import Toast from "./Basic/Toast";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "./context/auth";
 
 const Login = () => {
     const [useremail, setUserEmail] = useState();
     const [userpassword, setUserPassword] = useState();
     const [toast, setToast] = useState(null);
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleEmail = (e) => {
         setUserEmail(e.target.value)
@@ -31,7 +33,7 @@ const Login = () => {
             const data = await response.json();
             if (response.ok) {
                 setToast({ message: data?.message, type: 'success' });
-                localStorage.setItem("loggedIn", true);
+                login(data?.token);
                 navigate('/dashboard');
 
             } else {
