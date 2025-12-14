@@ -33,7 +33,7 @@ const Login = () => {
             const data = await response.json();
             if (response.ok) {
                 setToast({ message: data?.message, type: 'success' });
-                login(data?.token);
+                login(data);
                 navigate('/dashboard');
 
             } else {

@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 const addUser = async (req, res) => {
     try {
-        const { username, useremail, userpassword } = req.body;
+        const { username, useremail, userpassword, userphone } = req.body;
         const checkUser = await User.findOne({ where: { useremail } });
 
         if (checkUser) {
@@ -14,6 +14,7 @@ const addUser = async (req, res) => {
             const user = await User.create({
                 username: username,
                 useremail: useremail,
+                userphone:userphone,
                 userpassword: hash
             });
             if (user) {
@@ -27,8 +28,8 @@ const addUser = async (req, res) => {
 
 };
 
-const generateAccessToken = (id,email) =>{
-    return jwt.sign({userId : id, email:email},"98789d8cedf2f9a86af5391")
+const generateAccessToken = (id, email) => {
+    return jwt.sign({ userId: id, email: email }, "98789d8cedf2f9a86af5391")
 };
 
 const loginUser = async (req, res) => {
@@ -42,8 +43,10 @@ const loginUser = async (req, res) => {
         const isMatch = await bcrypt.compare(userpassword, checkUser.userpassword);
 
         if (isMatch) {
+            const userObj = checkUser.get({ plain: true });
+            delete userObj.userpassword;
 
-            return res.status(200).send({ message: "User is successfully logged in", token: generateAccessToken(checkUser.id, useremail) });
+            return res.status(200).send({ message: "User is successfully logged in", token: generateAccessToken(checkUser.id, useremail), userInfo: userObj });
         } else {
             return res.status(401).send({ message: "Invalid credentials" });
         }
