@@ -6,9 +6,14 @@ const Signup = () => {
     const [useremail, setUserEmail] = useState();
     const [username, setUserName] = useState();
     const [userpassword, setUserPassword] = useState();
+    const [userphone,setUserPhone] = useState();
     const [toast, setToast] = useState(null);
     const handleName = (e) => {
         setUserName(e.target.value)
+    };
+
+    const handlePhone = (e) => {
+        setUserPhone(e.target.value)
     };
 
     const handleEmail = (e) => {
@@ -23,6 +28,7 @@ const Signup = () => {
         e.preventDefault();
         const userInfo = {
             username: username,
+            userphone:userphone,
             useremail: useremail,
             userpassword: userpassword
         }
@@ -49,6 +55,10 @@ const Signup = () => {
                 <div className="flex flex-col mb-2 gap-1">
                     <label className="font-medium">Full Name</label>
                     <input onChange={handleName} value={username} className="appearance-none border border-gray-300 rounded-md p-1" required />
+                </div>
+                 <div className="flex flex-col mb-2 gap-1">
+                    <label className="font-medium">Phone</label>
+                    <input onChange={handlePhone} value={userphone} className="appearance-none border border-gray-300 rounded-md p-1" required />
                 </div>
                 <div className="flex flex-col mb-2 gap-1">
                     <label className="font-medium">Email</label>
