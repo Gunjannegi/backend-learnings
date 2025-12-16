@@ -6,6 +6,7 @@ const app = express();
 const userRoutes = require('./routes/userRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const premiumRoutes = require('./routes/premiumRoutes');
 const sequelize = require('./utils/db-connection');
 
 require("./models/user");
@@ -16,7 +17,8 @@ app.use(cors());
 
 app.use('/user', userRoutes);
 app.use('/expenses',expenseRoutes);
-app.use("/payment", paymentRoutes);
+app.use('/payment', paymentRoutes);
+app.use('/premium', premiumRoutes);
 
 sequelize.sync().then(() => {
     app.listen(3000, () => {
