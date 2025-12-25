@@ -53,7 +53,7 @@ const LeaderboardModal = ({ open, onClose }) => {
                     {!errMessage ? <div className="mt-4 space-y-3">
                         {leaderboardData?.map((data) => (
                             <div className="flex justify-between font-semibold">
-                                <span>{data?.User.username}</span>
+                                <span>{data?.username}</span>
                                 <span>{data?.totalExpense}</span>
                             </div>
                         ))}
