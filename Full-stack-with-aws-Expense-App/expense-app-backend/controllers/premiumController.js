@@ -4,19 +4,21 @@ import User from "../models/user.js";
 
 export const getLeaderboardData = async (req, res) => {
   try {
-    const leaderboard = await Expense.findAll({
+
+    const leaderboard = await User.findAll({
       attributes: [
-        "UserId",
-        [Sequelize.fn("SUM", Sequelize.col("amount")), "totalExpense"]
+        'id',
+        'username',
+        [Sequelize.fn('SUM', Sequelize.col('Expenses.amount')), 'totalExpense']
       ],
       include: [
         {
-          model: User,
-          attributes: ["id", "username"]
+          model: Expense,
+          attributes: []
         }
       ],
-      group: ["UserId", "User.id"],
-      order: [[Sequelize.literal("totalExpense"), "DESC"]]
+      group: ['User.id'],
+      order: [[Sequelize.literal('totalExpense'), 'DESC']]
     });
 
     if (leaderboard.length === 0) {
