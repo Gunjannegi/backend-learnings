@@ -9,16 +9,8 @@ export const getLeaderboardData = async (req, res) => {
       attributes: [
         'id',
         'username',
-        [Sequelize.fn('SUM', Sequelize.col('Expenses.amount')), 'totalExpense']
-      ],
-      include: [
-        {
-          model: Expense,
-          attributes: []
-        }
-      ],
-      group: ['User.id'],
-      order: [[Sequelize.literal('totalExpense'), 'DESC']]
+        'totalExpense'
+      ]
     });
 
     if (leaderboard.length === 0) {
