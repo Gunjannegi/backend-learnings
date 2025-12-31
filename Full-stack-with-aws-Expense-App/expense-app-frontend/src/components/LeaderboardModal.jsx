@@ -7,30 +7,33 @@ const LeaderboardModal = ({ open, onClose }) => {
     const [errMessage, setErrMessage] = useState(null);
     const [leaderboardData, setLeaderboardData] = useState(null);
     const fetchLeaderboardData = async () => {
-        try {
-            const response = await fetch(`http://localhost:3000/premium/getLeaderboard`, {
-                method: "GET",
-                headers: {
-                    'Content-Type': 'application/json', 'Authorization': localStorage.getItem('token')
+        if (open) {
+            try {
+                const response = await fetch(`http://localhost:3000/premium/getLeaderboard`, {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json', 'Authorization': localStorage.getItem('token')
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data?.data.length === 0) {
+                        setErrMessage("No Data Found")
+                    }
+                    setLeaderboardData(data?.data)
+                } else {
+                    setErrMessage(data?.message)
                 }
-            });
-            if (response.ok) {
-                const data = await response.json();
-                if (data?.data.length === 0) {
-                    setErrMessage("No Data Found")
-                }
-                setLeaderboardData(data?.data)
-            } else {
+
+            } catch (err) {
                 setErrMessage(data?.message)
             }
-
-        } catch (err) {
-            setErrMessage(data?.message)
         }
+
     }
     useEffect(() => {
         fetchLeaderboardData();
-    }, [])
+    }, [open])
     return (
         <>
             <Dialog open={open} onOpenChange={onClose}>
