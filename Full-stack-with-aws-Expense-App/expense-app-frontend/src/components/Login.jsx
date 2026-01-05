@@ -2,11 +2,13 @@ import { useState } from "react";
 import Toast from "./Basic/Toast";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "./context/auth";
+import ForgotPassword from "./ForgotPassword";
 
 const Login = () => {
-    const [useremail, setUserEmail] = useState();
-    const [userpassword, setUserPassword] = useState();
+    const [useremail, setUserEmail] = useState("");
+    const [userpassword, setUserPassword] = useState("");
     const [toast, setToast] = useState(null);
+    const [isForgotPasswordPopup, setIsForgotPasswordPopup] = useState(false);
     const navigate = useNavigate();
     const { login } = useAuth();
 
@@ -55,6 +57,9 @@ const Login = () => {
                     <label className="font-medium">Password</label>
                     <input onChange={handlePassword} value={userpassword} className="appearance-none border border-gray-300 rounded-md p-1" required />
                 </div>
+                <div className="text-xs text-right text-red-800 underline cursor-pointer hover:text-red-900"
+               onClick={() => setIsForgotPasswordPopup(true)}
+                >Forgot Password</div>
                 <button className="bg-red-900 w-full py-2 rounded-md text-white font-medium mt-4 cursor-pointer hover:bg-red-800">Login</button>
                 <p className="text-xs text-center mt-1">New User?<Link to="/" className="text-red-800 underline cursor-pointer hover:text-red-900"
                 >Signup</Link></p>
@@ -66,6 +71,7 @@ const Login = () => {
                     onClose={() => setToast(null)}
                 />
             )}
+            <ForgotPassword open={isForgotPasswordPopup} onClose={setIsForgotPasswordPopup}/>
         </div>
 
     )
