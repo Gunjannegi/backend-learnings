@@ -63,17 +63,17 @@ const ForgotPassword = ({ open, onClose }) => {
             />
           </div>
 
-          <div className="mt-6 flex justify-end gap-4">
+          <div className="mt-2 flex justify-end gap-4">
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="px-4 py-2 border-2 border-blue-900 text-blue-950 font-medium rounded-md hover:border-blue-950 transition cursor-pointer disabled:opacity-50"
+              className="px-4 py-1 border-2 border-blue-900 text-blue-950 font-medium rounded-md hover:border-blue-950 transition cursor-pointer disabled:opacity-50"
             >
               {loading ? "Sending..." : "Send"}
             </button>
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition font-medium cursor-pointer"
+              className="px-4 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition font-medium cursor-pointer"
             >
               Close
             </button>

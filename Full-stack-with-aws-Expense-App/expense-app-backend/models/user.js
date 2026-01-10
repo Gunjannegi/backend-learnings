@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../utils/db-connection');
+const ForgotPasswordRequests = require('./forgotPasswordRequests');
 
 const User = sequelize.define('User', {
    id: {
@@ -33,5 +34,8 @@ const User = sequelize.define('User', {
    }
 
 });
+
+User.hasMany(ForgotPasswordRequests);
+ForgotPasswordRequests.belongsTo(User);
 
 module.exports = User;

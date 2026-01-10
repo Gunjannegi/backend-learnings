@@ -13,7 +13,7 @@ const sequelize = require('./utils/db-connection');
 require("./models/user");
 require("./models/expense");
 
-
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 
