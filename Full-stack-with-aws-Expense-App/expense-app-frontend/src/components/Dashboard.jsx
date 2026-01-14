@@ -5,7 +5,7 @@ import ExpenseList from "./ExpenseList";
 const Dashboard = () => {
     const [expenses, setExpenses] = useState([]);
 
-    // 🔹 Function to fetch all expenses from backend
+    // Function to fetch all expenses from backend
     const getExpenses = async () => {
         try {
             const response = await fetch("http://localhost:3000/expenses", {
@@ -55,7 +55,7 @@ const Dashboard = () => {
     };
 
 
-    // 🔹 Fetch on mount
+    //Fetch on mount
     useEffect(() => {
         getExpenses();
     }, []);
