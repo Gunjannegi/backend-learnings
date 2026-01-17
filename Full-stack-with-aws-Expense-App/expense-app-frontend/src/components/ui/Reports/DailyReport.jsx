@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import ReportTable from "./ReportTable";
 
 const DailyReport = ({ expenses }) => {

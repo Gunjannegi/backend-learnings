@@ -3,76 +3,89 @@ import ExpenseForm from "./ExpenseForm";
 import ExpenseList from "./ExpenseList";
 
 const Dashboard = () => {
-    const [expenses, setExpenses] = useState([]);
+  const [expenseData, setExpenseData] = useState({});
+  const [page, setPage] = useState(1);
+  const LIMIT = 10;
 
-    // Function to fetch all expenses from backend
-    const getExpenses = async () => {
-        try {
-            const response = await fetch("http://localhost:3000/expenses", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    'Authorization': localStorage.getItem('token')
-                },
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || "Failed to fetch expenses");
-            }
-
-            const result = await response.json();
-
-            // ✅ Adjust this depending on your backend response structure
-            setExpenses(result?.data || result || []);
-        } catch (error) {
-            console.error("Error fetching expenses:", error);
+  // Fetch expenses
+  const getExpenses = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/expenses?page=${page}&limit=${LIMIT}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
         }
-    };
+      );
 
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to fetch expenses");
+      }
 
-    const handleDelete = async (id) => {
-        try {
-            const response = await fetch(`http://localhost:3000/expenses/delete/${id}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    'Authorization': localStorage.getItem('token')
-                },
-            });
+      const result = await response.json();
+      setExpenseData(result);
+    } catch (error) {
+      console.error("Error fetching expenses:", error);
+    }
+  };
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || "Failed to delete expense");
-            }
-
-            // ✅ Refresh the list after successful deletion
-             await getExpenses();
-
-        } catch (error) {
-            console.error("Error deleting expense:", error);
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/expenses/delete/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
         }
-    };
+      );
 
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to delete expense");
+      }
 
-    //Fetch on mount
-    useEffect(() => {
+      // Handle empty page after delete
+      if (expenseData?.data?.length === 1 && page > 1) {
+        setPage((p) => p - 1);
+      } else {
         getExpenses();
-    }, []);
+      }
+    } catch (error) {
+      console.error("Error deleting expense:", error);
+    }
+  };
 
-    return (
-        <div className="min-h-screen bg-gray-100 p-6 flex flex-col lg:flex-row gap-6">
-            {/* Left - Form */}
-            <div className="w-full lg:w-2/5">
-                <ExpenseForm getExpenses={getExpenses} />
-            </div>
+  //Fetch on mount & page change
+  useEffect(() => {
+    getExpenses();
+  }, [page]);
 
-            {/* Right - List */}
-            <div className="w-full lg:w-2/3">
-                <ExpenseList expenses={expenses} onDelete={handleDelete} />
-            </div>
-        </div>
-    );
+  return (
+    <div className="min-h-screen bg-gray-100 p-6 flex flex-col lg:flex-row gap-6">
+      {/* Left - Form */}
+      <div className="w-full lg:w-2/5">
+        <ExpenseForm getExpenses={getExpenses} />
+      </div>
+
+      {/* Right - List */}
+      <div className="w-full lg:w-2/3">
+        <ExpenseList
+          expenses={expenseData?.data || []}
+          pagination={expenseData?.pagination}
+          currentPage={page}
+          onPageChange={setPage}
+          onDelete={handleDelete}
+        />
+      </div>
+    </div>
+  );
 };
 
 export default Dashboard;

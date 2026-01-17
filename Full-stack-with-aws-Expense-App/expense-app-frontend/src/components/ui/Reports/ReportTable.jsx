@@ -1,7 +1,18 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
-const ReportTable = ({ title, columnLabel, data, fileName }) => {
+const ITEMS_PER_PAGE = 10;
+
+const ReportTable = ({ title, columnLabel, data = [], fileName }) => {
   const [open, setOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
+
+  const paginatedData = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return data.slice(startIndex, endIndex);
+  }, [data, currentPage]);
 
   const downloadCSV = () => {
     if (!data.length) return;
@@ -32,7 +43,6 @@ const ReportTable = ({ title, columnLabel, data, fileName }) => {
           {title}
         </h2>
 
-        {/* Three dot menu */}
         <div className="absolute top-5 right-5">
           <button
             onClick={() => setOpen(!open)}
@@ -65,14 +75,14 @@ const ReportTable = ({ title, columnLabel, data, fileName }) => {
           </thead>
 
           <tbody>
-            {data.length === 0 ? (
+            {paginatedData.length === 0 ? (
               <tr>
                 <td colSpan="2" className="px-4 py-6 text-center text-gray-500">
                   No expenses found
                 </td>
               </tr>
             ) : (
-              data.map(({ label, amount }) => (
+              paginatedData.map(({ label, amount }) => (
                 <tr key={label} className="border-b hover:bg-gray-50">
                   <td className="px-4 py-3 text-gray-700">{label}</td>
                   <td className="px-4 py-3 text-right font-semibold text-gray-900">
@@ -83,6 +93,47 @@ const ReportTable = ({ title, columnLabel, data, fileName }) => {
             )}
           </tbody>
         </table>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-6">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 rounded-md border text-sm disabled:opacity-50"
+            >
+              Prev
+            </button>
+
+            {[...Array(totalPages)].map((_, index) => {
+              const page = index + 1;
+              return (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`px-3 py-1 rounded-md text-sm border
+                    ${
+                      currentPage === page
+                        ? "bg-blue-500 text-white border-blue-500"
+                        : "hover:bg-gray-100"
+                    }`}
+                >
+                  {page}
+                </button>
+              );
+            })}
+
+            <button
+              onClick={() =>
+                setCurrentPage((p) => Math.min(p + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 rounded-md border text-sm disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

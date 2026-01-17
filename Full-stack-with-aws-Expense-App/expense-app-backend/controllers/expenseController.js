@@ -39,10 +39,21 @@ const addExpense = async (req, res) => {
 const getAllExpenses = async (req, res) => {
     try {
         const userId = req.user.id;
-        const expenses = await Expense.findAll({ where: { UserId: userId } });
-        if (expenses) {
-            return res.status(200).send({ message: "Expenses are fetched successfully", data: expenses })
-        }
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (page - 1) * limit
+        const { count, rows } = await Expense.findAndCountAll({
+            where: { UserId: userId },
+            limit: limit,
+            offset: offset,
+            order: [['date', 'DESC']]
+        });
+        return res.status(200).send({ message: "Expenses are fetched successfully", data: rows, pagination: { totalPages: Math.ceil(count / limit), currentPage: page, limit: limit, totalNumberOfExpenses: count } })
+        // const expenses = await Expense.findAll({ where: { UserId: userId } });
+        // const totalNumberOfExpenses = await Expense.count({ where: { UserId: userId } });
+        // if (expenses) {
+        //     return res.status(200).send({ message: "Expenses are fetched successfully", data: expenses, totalNumberOfExpenses: totalNumberOfExpenses })
+        // }
     } catch (err) {
         return res.status(500).send(err)
     }
