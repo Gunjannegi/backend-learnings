@@ -16,6 +16,7 @@ const ExpenseList = ({ expenses = [], pagination, currentPage, onPageChange, onD
             <thead>
               <tr className="bg-gray-100 text-gray-600 text-left">
                 <th className="p-3">Description</th>
+                <th className="p-3">Note</th>
                 <th className="p-3">Amount</th>
                 <th className="p-3">Date</th>
                 <th className="p-3">Category</th>
@@ -29,6 +30,7 @@ const ExpenseList = ({ expenses = [], pagination, currentPage, onPageChange, onD
                   className="border-b hover:bg-gray-50 transition-all"
                 >
                   <td className="p-3">{expense.description}</td>
+                  <td className="p-3">{expense.note}</td>
                   <td className="p-3 text-green-600 font-medium">
                     ₹{parseFloat(expense.amount).toFixed(2)}
                   </td>
