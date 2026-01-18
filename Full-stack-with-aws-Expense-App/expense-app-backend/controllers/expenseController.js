@@ -7,10 +7,10 @@ const addExpense = async (req, res) => {
 
     try {
         const userId = req.user.id;
-        const { description, amount, date, category } = req.body;
+        const { description, amount, date, category, note } = req.body;
 
         const expense = await Expense.create(
-            { description, amount, date, category, UserId: userId },
+            { description, amount, date, category, note, UserId: userId },
             { transaction: t }
         );
 

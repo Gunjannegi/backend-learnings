@@ -7,6 +7,7 @@ const ExpenseForm = ({ getExpenses }) => {
         amount: "",
         date: "",
         category: "",
+        note:""
     });
     const [aiLoading, setAiLoading] = useState(false);
     const [toast, setToast] = useState(null);
@@ -83,6 +84,20 @@ const ExpenseForm = ({ getExpenses }) => {
                         onChange={handleChange}
                         onBlur={handleBlur}
                         placeholder="Enter expense description"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
+                    />
+                </div>
+
+                {/* Note */}
+                <div>
+                    <label className="block text-gray-600 font-medium mb-1">Note</label>
+                    <input
+                        type="text"
+                        name="note"
+                        value={formData.note}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        placeholder="Enter expense note"
                         className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
                     />
                 </div>
