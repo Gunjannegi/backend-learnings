@@ -1,32 +1,56 @@
-import { useState, useMemo } from "react";
+import { ROWS_OPTIONS } from "@/components/Basic/const";
+import { useState, useMemo, useEffect } from "react";
 
-const ITEMS_PER_PAGE = 10;
+const DEFAULT_ROWS = 5;
 
 const ReportTable = ({ title, columnLabel, data = [], fileName }) => {
   const [open, setOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
+  // Rows per page (persisted)
+  const [rowsPerPage, setRowsPerPage] = useState(() => {
+    return Number(localStorage.getItem("rowsPerPage")) || DEFAULT_ROWS;
+  });
 
+  // Save rowsPerPage to localStorage
+  useEffect(() => {
+    localStorage.setItem("rowsPerPage", rowsPerPage);
+  }, [rowsPerPage]);
+
+  const totalPages = Math.ceil(data.length / rowsPerPage);
+
+  // Safety: reset page if data/pages change
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(1);
+    }
+  }, [totalPages, currentPage]);
+
+  // Paginated data
   const paginatedData = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
     return data.slice(startIndex, endIndex);
-  }, [data, currentPage]);
+  }, [data, currentPage, rowsPerPage]);
 
+  // CSV Download
   const downloadCSV = () => {
     if (!data.length) return;
 
     const headers = [columnLabel, "Total Expense"];
     const rows = data.map((item) => [item.label, item.amount]);
 
-    const csvContent =
-      [headers, ...rows].map((row) => row.join(",")).join("\n");
+    const csvContent = [headers, ...rows]
+      .map((row) => row.join(","))
+      .join("\n");
 
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const blob = new Blob([csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+
     const url = URL.createObjectURL(blob);
-
     const link = document.createElement("a");
+
     link.href = url;
     link.download = fileName || "report.csv";
     link.click();
@@ -38,12 +62,12 @@ const ReportTable = ({ title, columnLabel, data = [], fileName }) => {
   return (
     <div className="relative mx-auto mt-6 bg-white rounded-xl shadow-md p-5 w-full">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 relative">
         <h2 className="text-xl font-semibold text-gray-800 text-center w-full">
           {title}
         </h2>
 
-        <div className="absolute top-5 right-5">
+        <div className="absolute right-0 top-0">
           <button
             onClick={() => setOpen(!open)}
             className="p-2 rounded-full hover:bg-gray-100 font-extrabold"
@@ -77,7 +101,10 @@ const ReportTable = ({ title, columnLabel, data = [], fileName }) => {
           <tbody>
             {paginatedData.length === 0 ? (
               <tr>
-                <td colSpan="2" className="px-4 py-6 text-center text-gray-500">
+                <td
+                  colSpan="2"
+                  className="px-4 py-6 text-center text-gray-500"
+                >
                   No expenses found
                 </td>
               </tr>
@@ -95,8 +122,29 @@ const ReportTable = ({ title, columnLabel, data = [], fileName }) => {
         </table>
 
         {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-2 mt-6">
+
+        <div className="flex justify-between items-center mt-4">
+          {/* Rows per page */}
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <span>Rows per page:</span>
+            <select
+              value={rowsPerPage}
+              onChange={(e) => {
+                setRowsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="border rounded-md px-2 py-1"
+            >
+              {ROWS_OPTIONS.map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Page buttons */}
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
               disabled={currentPage === 1}
@@ -112,10 +160,9 @@ const ReportTable = ({ title, columnLabel, data = [], fileName }) => {
                   key={page}
                   onClick={() => setCurrentPage(page)}
                   className={`px-3 py-1 rounded-md text-sm border
-                    ${
-                      currentPage === page
-                        ? "bg-blue-500 text-white border-blue-500"
-                        : "hover:bg-gray-100"
+                      ${currentPage === page
+                      ? "bg-blue-500 text-white border-blue-500"
+                      : "hover:bg-gray-100"
                     }`}
                 >
                   {page}
@@ -133,7 +180,8 @@ const ReportTable = ({ title, columnLabel, data = [], fileName }) => {
               Next
             </button>
           </div>
-        )}
+        </div>
+
       </div>
     </div>
   );

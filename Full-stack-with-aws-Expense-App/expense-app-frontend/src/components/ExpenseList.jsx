@@ -1,5 +1,9 @@
-const ExpenseList = ({ expenses = [], pagination, currentPage, onPageChange, onDelete }) => {
+import { useEffect, useState } from "react";
+import { ROWS_OPTIONS } from "./Basic/const";
+
+const ExpenseList = ({ expenses = [], pagination, currentPage, onPageChange, onDelete, rowsPerPage, setRowsPerPage }) => {
   const totalPages = pagination?.totalPages;
+
   return (
     <div className="mx-auto bg-white shadow-lg rounded-xl p-6 min-h-[473px]">
       <h2 className="text-xl font-semibold text-gray-700 mb-4">Expense List</h2>
@@ -44,7 +48,25 @@ const ExpenseList = ({ expenses = [], pagination, currentPage, onPageChange, onD
               ))}
             </tbody>
           </table>
-          {totalPages > 1 && (
+          
+          <div className="flex justify-between items-center mt-4">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <span>Rows per page:</span>
+              <select
+                value={rowsPerPage}
+                onChange={(e) => {
+                  setRowsPerPage(Number(e.target.value));
+                  onPageChange(1);
+                }}
+                className="border rounded-md px-2 py-1"
+              >
+                {ROWS_OPTIONS.map((size) => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className="flex justify-center items-center gap-2 mt-6">
               <button
                 onClick={() => onPageChange((p) => Math.max(p - 1, 1))}
@@ -81,7 +103,7 @@ const ExpenseList = ({ expenses = [], pagination, currentPage, onPageChange, onD
                 Next
               </button>
             </div>
-          )}
+          </div>
         </>
       )}
     </div>

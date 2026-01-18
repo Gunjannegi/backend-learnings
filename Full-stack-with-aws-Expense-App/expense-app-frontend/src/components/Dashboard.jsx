@@ -5,13 +5,15 @@ import ExpenseList from "./ExpenseList";
 const Dashboard = () => {
   const [expenseData, setExpenseData] = useState({});
   const [page, setPage] = useState(1);
-  const LIMIT = 10;
-
+  const DEFAULT_ROWS = 5;
+  const [rowsPerPage, setRowsPerPage] = useState(() => {
+    return Number(localStorage.getItem("rowsPerPageForDashboard")) || DEFAULT_ROWS;
+  });
   // Fetch expenses
   const getExpenses = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3000/expenses?page=${page}&limit=${LIMIT}`,
+        `http://localhost:3000/expenses?page=${page}&limit=${rowsPerPage}`,
         {
           method: "GET",
           headers: {
@@ -62,10 +64,16 @@ const Dashboard = () => {
     }
   };
 
+  // Save rowsPerPageForDashboard to localStorage
+  useEffect(() => {
+    localStorage.setItem("rowsPerPageForDashboard", rowsPerPage);
+  }, [rowsPerPage]);
+
+
   //Fetch on mount & page change
   useEffect(() => {
     getExpenses();
-  }, [page]);
+  }, [page, rowsPerPage]);
 
   return (
     <div className="min-h-screen bg-gray-100 p-6 flex flex-col lg:flex-row gap-6">
@@ -82,6 +90,8 @@ const Dashboard = () => {
           currentPage={page}
           onPageChange={setPage}
           onDelete={handleDelete}
+          rowsPerPage={rowsPerPage}
+          setRowsPerPage={setRowsPerPage}
         />
       </div>
     </div>
