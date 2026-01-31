@@ -69,7 +69,6 @@ const Signup = () => {
                     <input onChange={handlePassword} value={userpassword} className="appearance-none border border-gray-300 rounded-md p-1" required />
                 </div>
                 <button className="bg-red-900 w-full py-2 rounded-md text-white font-medium mt-4 cursor-pointer hover:bg-red-800">Sign Up</button>
-                <p className="text-xs text-center mt-1">Existing User?<Link to="/login" className="text-red-800 underline cursor-pointer hover:text-red-900">Login</Link></p>
             </form>
             {toast && (
                 <Toast

@@ -1,4 +1,4 @@
-const { DataTypes, UUIDV4 } = require("sequelize");
+const { DataTypes } = require("sequelize");
 const sequelize = require("../utils/db-connection");
 
 const ForgotPasswordRequests = sequelize.define('ForgotPasswordRequests', {
@@ -9,6 +9,10 @@ const ForgotPasswordRequests = sequelize.define('ForgotPasswordRequests', {
     isactive:{
         type:DataTypes.BOOLEAN,
         defaultValue:false
+    },
+    expiresAt:{
+        type:DataTypes.DATE,
+        allowNull:false
     }
 
 });

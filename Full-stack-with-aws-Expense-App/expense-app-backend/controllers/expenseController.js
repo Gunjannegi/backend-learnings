@@ -35,6 +35,41 @@ const addExpense = async (req, res) => {
     }
 };
 
+const updateExpense = async (req, res) => {
+    const t = await sequelize.transaction();
+
+    try {
+        const { id } = req.params;
+        const userId = req.user.id;
+
+        if (!userId) {
+            await t.rollback();
+            return res.status(400).json({ message: "Unauthorized" });
+        }
+
+        const expense = await Expense.findOne({
+            where: { id, UserId: userId },
+            transaction: t
+        });
+
+        if (!expense) {
+            await t.rollback();
+            return res.status(404).json({ message: "Expense not found" });
+        }
+
+        await expense.update(req.body, { transaction: t });
+
+        await t.commit();
+        return res.status(200).json({
+            message: "Expense updated successfully",
+            expense
+        });
+
+    } catch (err) {
+        await t.rollback();
+        return res.status(500).json({ message: "Failed to update expense" });
+    }
+};
 
 const getAllExpenses = async (req, res) => {
     try {
@@ -49,11 +84,6 @@ const getAllExpenses = async (req, res) => {
             order: [['date', 'DESC']]
         });
         return res.status(200).send({ message: "Expenses are fetched successfully", data: rows, pagination: { totalPages: Math.ceil(count / limit), currentPage: page, limit: limit, totalNumberOfExpenses: count } })
-        // const expenses = await Expense.findAll({ where: { UserId: userId } });
-        // const totalNumberOfExpenses = await Expense.count({ where: { UserId: userId } });
-        // if (expenses) {
-        //     return res.status(200).send({ message: "Expenses are fetched successfully", data: expenses, totalNumberOfExpenses: totalNumberOfExpenses })
-        // }
     } catch (err) {
         return res.status(500).send(err)
     }
@@ -86,4 +116,4 @@ const deleteExpense = async (req, res) => {
     }
 };
 
-module.exports = { addExpense, getAllExpenses, deleteExpense }
+module.exports = { addExpense, getAllExpenses, updateExpense, deleteExpense }

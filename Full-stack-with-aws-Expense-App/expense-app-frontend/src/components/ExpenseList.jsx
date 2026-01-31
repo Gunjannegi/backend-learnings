@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { ROWS_OPTIONS } from "./Basic/const";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
-const ExpenseList = ({ expenses = [], pagination, currentPage, onPageChange, onDelete, rowsPerPage, setRowsPerPage }) => {
+const ExpenseList = ({ expenses = [], pagination, currentPage, onPageChange, onDelete, onEdit, rowsPerPage, setRowsPerPage }) => {
   const totalPages = pagination?.totalPages;
 
   return (
@@ -31,26 +32,22 @@ const ExpenseList = ({ expenses = [], pagination, currentPage, onPageChange, onD
                 >
                   <td className="p-3">{expense.description}</td>
                   <td className="p-3">{expense.note}</td>
-                  <td className="p-3 text-green-600 font-medium">
+                  <td className="p-3">
                     ₹{parseFloat(expense.amount).toFixed(2)}
                   </td>
                   <td className="p-3">
                     {new Date(expense.date).toLocaleDateString()}
                   </td>
                   <td className="p-3">{expense.category}</td>
-                  <td className="p-3 text-center">
-                    <button
-                      onClick={() => onDelete?.(expense.id)}
-                      className="text-red-500 hover:text-red-600 font-medium cursor-pointer"
-                    >
-                      Delete
-                    </button>
+                  <td className="p-3 flex gap-2 justify-center items-center">
+                    <FaEdit className="cursor-pointer text-blue-950 opacity-50 hover:opacity-100" title="Edit" onClick={() => onEdit?.(expense)}/>
+                    <FaTrash className="cursor-pointer text-red-500 opacity-50 hover:opacity-100" title="Delete" onClick={() => onDelete?.(expense.id)} />
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          
+
           <div className="flex justify-between items-center mt-4">
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <span>Rows per page:</span>

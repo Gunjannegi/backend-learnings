@@ -1,17 +1,31 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Toast from "./Basic/Toast";
 
-const ExpenseForm = ({ getExpenses }) => {
+const ExpenseForm = ({ getExpenses, editExpenseData }) => {
     const [formData, setFormData] = useState({
         description: "",
         amount: "",
         date: "",
         category: "",
-        note:""
+        note: ""
     });
     const [aiLoading, setAiLoading] = useState(false);
     const [toast, setToast] = useState(null);
+    const isEditMode = Boolean(formData.id);
+    const isSubmitting = useRef(false); // Track submission state
     const categories = ["Food", "Travel", "Shopping", "Bills", "Entertainment", "Health", "Education", "Rent", "Groceries", "Other"];
+    useEffect(() => {
+        if (editExpenseData) {
+            setFormData({
+                id: editExpenseData.id,
+                description: editExpenseData.description || "",
+                amount: editExpenseData.amount || "",
+                date: editExpenseData.date || "",
+                category: editExpenseData.category || "",
+                note: editExpenseData.note || ""
+            });
+        }
+    }, [editExpenseData]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -22,11 +36,14 @@ const ExpenseForm = ({ getExpenses }) => {
         e.preventDefault();
         if (!formData.description || !formData.amount || !formData.date || !formData.category) {
             alert("Please fill all fields!");
+            isSubmitting.current = false; // Reset if validation fails
             return;
         }
         try {
-            const response = await fetch(`http://localhost:3000/expenses/add`, {
-                method: "POST",
+            const url = isEditMode ? `http://localhost:3000/expenses/${formData.id}` : `http://localhost:3000/expenses/add`
+            const method = isEditMode ? "PUT" : "POST"
+            const response = await fetch(url, {
+                method: method,
                 headers: {
                     'Content-Type': 'application/json', 'Authorization': localStorage.getItem('token')
                 },
@@ -35,16 +52,24 @@ const ExpenseForm = ({ getExpenses }) => {
             const data = await response.json();
             setToast({ message: data?.message, type: 'success' });
             await getExpenses();
-            setFormData({ description: "", amount: "", date: "", category: "" });
+            setFormData({ description: "", amount: "", date: "", category: "", note: "" });
 
         } catch (err) {
             setToast({ message: err.message, type: "error" });
             console.log(err);
+        } finally {
+            isSubmitting.current = false; // Reset submission flag
         }
 
     };
 
     const handleBlur = async (e) => {
+        // Don't run if we're currently submitting the form
+        if (isSubmitting.current) {
+            console.log("Blocked blur - form is submitting");
+            return;
+        }
+
         const value = e.target.value;
         if (value !== "") {
             try {
@@ -65,6 +90,11 @@ const ExpenseForm = ({ getExpenses }) => {
             }
         }
     }
+
+    // Set flag BEFORE blur event fires
+    const handleButtonMouseDown = () => {
+        isSubmitting.current = true;
+    };
 
     return (
         <>
@@ -96,7 +126,6 @@ const ExpenseForm = ({ getExpenses }) => {
                         name="note"
                         value={formData.note}
                         onChange={handleChange}
-                        onBlur={handleBlur}
                         placeholder="Enter expense note"
                         className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
                     />
@@ -151,9 +180,10 @@ const ExpenseForm = ({ getExpenses }) => {
                 {/* Submit Button */}
                 <button
                     type="submit"
+                    onMouseDown={handleButtonMouseDown}
                     className="w-full bg-red-900 text-white py-2 rounded-lg font-medium hover:bg-red-800 transition cursor-pointer"
                 >
-                    Add Expense
+                    {isEditMode ? "Edit Expense" : "Add Expense"}
                 </button>
             </form>
             {toast && (

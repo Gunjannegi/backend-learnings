@@ -4,6 +4,7 @@ import ExpenseList from "./ExpenseList";
 
 const Dashboard = () => {
   const [expenseData, setExpenseData] = useState({});
+  const [editExpenseData, setEditExpenseData] = useState({});
   const [page, setPage] = useState(1);
   const DEFAULT_ROWS = 5;
   const [rowsPerPage, setRowsPerPage] = useState(() => {
@@ -64,6 +65,10 @@ const Dashboard = () => {
     }
   };
 
+  const handleEdit = async(expense)=>{
+     setEditExpenseData(expense);
+  };
+
   // Save rowsPerPageForDashboard to localStorage
   useEffect(() => {
     localStorage.setItem("rowsPerPageForDashboard", rowsPerPage);
@@ -76,10 +81,10 @@ const Dashboard = () => {
   }, [page, rowsPerPage]);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 flex flex-col lg:flex-row gap-6">
+    <div className="bg-gray-100 p-6 flex flex-col lg:flex-row gap-6 h-[87vh]">
       {/* Left - Form */}
       <div className="w-full lg:w-2/5">
-        <ExpenseForm getExpenses={getExpenses} />
+        <ExpenseForm getExpenses={getExpenses} editExpenseData={editExpenseData} />
       </div>
 
       {/* Right - List */}
@@ -90,6 +95,7 @@ const Dashboard = () => {
           currentPage={page}
           onPageChange={setPage}
           onDelete={handleDelete}
+          onEdit={handleEdit}
           rowsPerPage={rowsPerPage}
           setRowsPerPage={setRowsPerPage}
         />

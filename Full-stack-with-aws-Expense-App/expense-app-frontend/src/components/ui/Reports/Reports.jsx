@@ -38,8 +38,7 @@ const Reports = () => {
 
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-
+    <div className="bg-gray-100 p-6 h-[87vh]">
       <div className="mx-auto w-4/5 rounded-xl border bg-white overflow-hidden">
 
         {/* Tabs */}
