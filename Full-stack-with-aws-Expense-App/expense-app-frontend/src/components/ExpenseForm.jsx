@@ -9,11 +9,26 @@ const ExpenseForm = ({ getExpenses, editExpenseData }) => {
         category: "",
         note: ""
     });
+
     const [aiLoading, setAiLoading] = useState(false);
     const [toast, setToast] = useState(null);
+    const isSubmitting = useRef(false);
+
     const isEditMode = Boolean(formData.id);
-    const isSubmitting = useRef(false); // Track submission state
-    const categories = ["Food", "Travel", "Shopping", "Bills", "Entertainment", "Health", "Education", "Rent", "Groceries", "Other"];
+
+    const categories = [
+        "Food",
+        "Travel",
+        "Shopping",
+        "Bills",
+        "Entertainment",
+        "Health",
+        "Education",
+        "Rent",
+        "Groceries",
+        "Other"
+    ];
+
     useEffect(() => {
         if (editExpenseData) {
             setFormData({
@@ -34,64 +49,77 @@ const ExpenseForm = ({ getExpenses, editExpenseData }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         if (!formData.description || !formData.amount || !formData.date || !formData.category) {
-            alert("Please fill all fields!");
-            isSubmitting.current = false; // Reset if validation fails
+            alert("Please fill required fields!");
+            isSubmitting.current = false;
             return;
         }
+
         try {
-            const url = isEditMode ? `http://localhost:3000/expenses/${formData.id}` : `http://localhost:3000/expenses/add`
-            const method = isEditMode ? "PUT" : "POST"
+            const url = isEditMode
+                ? `http://localhost:3000/expenses/${formData.id}`
+                : `http://localhost:3000/expenses/add`;
+
+            const method = isEditMode ? "PUT" : "POST";
+
             const response = await fetch(url, {
-                method: method,
+                method,
                 headers: {
-                    'Content-Type': 'application/json', 'Authorization': localStorage.getItem('token')
+                    "Content-Type": "application/json",
+                    Authorization: localStorage.getItem("token")
                 },
                 body: JSON.stringify(formData)
             });
-            const data = await response.json();
-            setToast({ message: data?.message, type: 'success' });
-            await getExpenses();
-            setFormData({ description: "", amount: "", date: "", category: "", note: "" });
 
+            const data = await response.json();
+            setToast({ message: data?.message, type: "success" });
+            await getExpenses();
+
+            setFormData({
+                description: "",
+                amount: "",
+                date: "",
+                category: "",
+                note: ""
+            });
         } catch (err) {
             setToast({ message: err.message, type: "error" });
-            console.log(err);
+            console.error(err);
         } finally {
-            isSubmitting.current = false; // Reset submission flag
+            isSubmitting.current = false;
         }
-
     };
 
     const handleBlur = async (e) => {
-        // Don't run if we're currently submitting the form
-        if (isSubmitting.current) {
-            console.log("Blocked blur - form is submitting");
-            return;
-        }
+        if (isSubmitting.current) return;
 
         const value = e.target.value;
-        if (value !== "") {
-            try {
-                setAiLoading(true);
-                const response = await fetch(`http://localhost:3000/ask`, {
-                    method: "POST",
-                    headers: {
-                        'Content-Type': 'application/json', 'Authorization': localStorage.getItem('token')
-                    },
-                    body: JSON.stringify({ prompt: value }),
-                });
-                const data = await response.json();
-                setFormData((prev) => ({ ...prev, category: data.suggest_category }))
-            } catch (err) {
-                setToast({ message: err.message, type: "error" });
-            } finally {
-                setAiLoading(false)
-            }
-        }
-    }
+        if (!value) return;
 
-    // Set flag BEFORE blur event fires
+        try {
+            setAiLoading(true);
+            const response = await fetch("http://localhost:3000/ask", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: localStorage.getItem("token")
+                },
+                body: JSON.stringify({ prompt: value })
+            });
+
+            const data = await response.json();
+            setFormData((prev) => ({
+                ...prev,
+                category: data.suggest_category
+            }));
+        } catch (err) {
+            setToast({ message: err.message, type: "error" });
+        } finally {
+            setAiLoading(false);
+        }
+    };
+
     const handleButtonMouseDown = () => {
         isSubmitting.current = true;
     };
@@ -100,13 +128,17 @@ const ExpenseForm = ({ getExpenses, editExpenseData }) => {
         <>
             <form
                 onSubmit={handleSubmit}
-                className="mx-auto bg-white shadow-lg rounded-xl p-6 space-y-4"
+                className="mx-auto w-full max-w-lg bg-white shadow-lg rounded-xl p-4 sm:p-6 space-y-4"
             >
-                <h2 className="text-xl font-semibold text-gray-700">Add New Expense</h2>
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-700 text-center sm:text-left">
+                    {isEditMode ? "Edit Expense" : "Add New Expense"}
+                </h2>
 
                 {/* Description */}
                 <div>
-                    <label className="block text-gray-600 font-medium mb-1">Description</label>
+                    <label className="block text-gray-600 font-medium mb-1">
+                        Description <span className="text-red-500">*</span>
+                    </label>
                     <input
                         type="text"
                         name="description"
@@ -120,20 +152,24 @@ const ExpenseForm = ({ getExpenses, editExpenseData }) => {
 
                 {/* Note */}
                 <div>
-                    <label className="block text-gray-600 font-medium mb-1">Note</label>
+                    <label className="block text-gray-600 font-medium mb-1">
+                        Note
+                    </label>
                     <input
                         type="text"
                         name="note"
                         value={formData.note}
                         onChange={handleChange}
-                        placeholder="Enter expense note"
+                        placeholder="Optional note"
                         className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
                     />
                 </div>
 
                 {/* Amount */}
                 <div>
-                    <label className="block text-gray-600 font-medium mb-1">Amount</label>
+                    <label className="block text-gray-600 font-medium mb-1">
+                        Amount <span className="text-red-500">*</span>
+                    </label>
                     <input
                         type="number"
                         name="amount"
@@ -146,7 +182,9 @@ const ExpenseForm = ({ getExpenses, editExpenseData }) => {
 
                 {/* Date */}
                 <div>
-                    <label className="block text-gray-600 font-medium mb-1">Date</label>
+                    <label className="block text-gray-600 font-medium mb-1">
+                        Date <span className="text-red-500">*</span>
+                    </label>
                     <input
                         type="date"
                         name="date"
@@ -158,9 +196,15 @@ const ExpenseForm = ({ getExpenses, editExpenseData }) => {
 
                 {/* Category */}
                 <div>
-                    <div className="flex gap-2 items-center">
-                        <label className="block text-gray-600 font-medium mb-1">Category</label>
-                        {aiLoading && <span className="text-pink-500 text-xs">Ai suggesting...</span>}
+                    <div className="flex items-center gap-2 mb-1">
+                        <label className="text-gray-600 font-medium">
+                            Category <span className="text-red-500">*</span>
+                        </label>
+                        {aiLoading && (
+                            <span className="text-pink-500 text-xs">
+                                AI suggesting...
+                            </span>
+                        )}
                     </div>
                     <select
                         name="category"
@@ -181,11 +225,12 @@ const ExpenseForm = ({ getExpenses, editExpenseData }) => {
                 <button
                     type="submit"
                     onMouseDown={handleButtonMouseDown}
-                    className="w-full bg-red-900 text-white py-2 rounded-lg font-medium hover:bg-red-800 transition cursor-pointer"
+                    className="w-full bg-red-900 text-white py-2 rounded-lg font-medium hover:bg-red-800 transition active:scale-[0.99]"
                 >
-                    {isEditMode ? "Edit Expense" : "Add Expense"}
+                    {isEditMode ? "Update Expense" : "Add Expense"}
                 </button>
             </form>
+
             {toast && (
                 <Toast
                     message={toast.message}

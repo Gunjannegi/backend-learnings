@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Toast from "./Basic/Toast";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
     const [useremail, setUserEmail] = useState();
@@ -8,6 +8,7 @@ const Signup = () => {
     const [userpassword, setUserPassword] = useState();
     const [userphone,setUserPhone] = useState();
     const [toast, setToast] = useState(null);
+    const navigate = useNavigate();
     const handleName = (e) => {
         setUserName(e.target.value)
     };
@@ -41,6 +42,7 @@ const Signup = () => {
             const data = await response.json();
             if (response.ok) {
                 setToast({ message: data?.message, type: 'success' });
+                navigate('/dashboard');
             } else {
                 setToast({ message: data?.message || "Something went wrong", type: "error" });
             }
@@ -50,7 +52,7 @@ const Signup = () => {
     }
 
     return (
-        <div className="min-h-[90vh] w-full flex justify-center items-center m-0">
+        <div className="md:min-h-[90vh] w-full flex justify-center items-center m-0">
             <form className="border p-6 border-gray-300 rounded-lg w-[300px] bg-white" onSubmit={handleSubmit}>
                 <div className="flex flex-col mb-2 gap-1">
                     <label className="font-medium">Full Name</label>

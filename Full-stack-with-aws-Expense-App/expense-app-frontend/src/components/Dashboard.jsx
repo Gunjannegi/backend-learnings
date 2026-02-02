@@ -81,7 +81,7 @@ const Dashboard = () => {
   }, [page, rowsPerPage]);
 
   return (
-    <div className="bg-gray-100 p-6 flex flex-col lg:flex-row gap-6 h-[87vh]">
+    <div className="p-6 flex flex-col lg:flex-row gap-6">
       {/* Left - Form */}
       <div className="w-full lg:w-2/5">
         <ExpenseForm getExpenses={getExpenses} editExpenseData={editExpenseData} />

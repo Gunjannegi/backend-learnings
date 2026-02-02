@@ -72,7 +72,7 @@ const ForgotPassword = ({ open, onClose }) => {
               {loading ? "Sending..." : "Send"}
             </button>
             <button
-              onClick={onClose}
+              onClick={()=>{onClose()}}
               className="px-4 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition font-medium cursor-pointer"
             >
               Close
