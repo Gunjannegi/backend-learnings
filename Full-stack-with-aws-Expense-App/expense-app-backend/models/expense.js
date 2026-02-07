@@ -15,11 +15,11 @@ const Expense = sequelize.define(
       allowNull: false,
     },
     amount: {
-      type: DataTypes.FLOAT, // or DECIMAL(10,2) for currency precision
+      type: DataTypes.FLOAT,
       allowNull: false,
     },
     date: {
-      type: DataTypes.DATEONLY, // stores only YYYY-MM-DD
+      type: DataTypes.DATEONLY, 
       allowNull: false,
     },
     category: {

@@ -5,7 +5,7 @@ const authenticate = async(req,res,next)=>{
 
     try{
         const token = req.header('authorization');
-        const userInfo = jwt.verify(token,'98789d8cedf2f9a86af5391');
+        const userInfo = jwt.verify(token,process.env.JWT_SECRET);
         const user = await User.findByPk(Number(userInfo.userId));
         if(user){
             req.user = user;

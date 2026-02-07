@@ -1,5 +1,4 @@
-import { Sequelize } from "sequelize";
-import Expense from "../models/expense.js";
+
 import User from "../models/user.js";
 
 export const getLeaderboardData = async (req, res) => {

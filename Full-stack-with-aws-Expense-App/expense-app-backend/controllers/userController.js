@@ -14,7 +14,7 @@ const addUser = async (req, res) => {
             const user = await User.create({
                 username: username,
                 useremail: useremail,
-                userphone:userphone,
+                userphone: userphone,
                 userpassword: hash
             });
             if (user) {
@@ -29,7 +29,7 @@ const addUser = async (req, res) => {
 };
 
 const generateAccessToken = (id, email) => {
-    return jwt.sign({ userId: id, email: email }, "98789d8cedf2f9a86af5391")
+    return jwt.sign({ userId: id, email: email }, process.env.JWT_SECRET)
 };
 
 const loginUser = async (req, res) => {
