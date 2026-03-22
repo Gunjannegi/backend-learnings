@@ -32,6 +32,9 @@ app.use('/premium', premiumRoutes);
 app.use('/ask', aiRoutes);
 app.use('/password', passwordRoutes);
 app.use('/exports',exportRoutes);
+app.get('/test', (req, res) => {
+    res.send('Backend live test')
+})
 
 sequelize.sync().then(() => {
   app.listen(process.env.PORT, () => {
