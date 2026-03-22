@@ -1,8 +1,15 @@
 import { useState } from "react";
-import { ROWS_OPTIONS } from "./Basic/const";
-import { FaEdit, FaTrash } from "react-icons/fa";
-import DeleteConfirmationPopup from "./Basic/DeleteConfirmationPopup";
-import { formatDate } from "./Basic/dateUtils";
+import { ROWS_OPTIONS } from "../../Basic/const";
+import { FaEdit, FaDownload, FaTrash } from "react-icons/fa";
+import DeleteConfirmationPopup from "../../Basic/DeleteConfirmationPopup";
+import { formatDate } from "../../Basic/dateUtils";
+import { BsClockHistory } from 'react-icons/bs';
+import ExportHistoryPanel from "./ExpenseHistoryPanel";
+import { ImSpinner2 } from 'react-icons/im';
+import Toast from "@/components/Basic/Toast";
+import { FaTrophy } from 'react-icons/fa';
+import LeaderboardModal from "@/components/LeaderboardModal";
+import { useAuth } from "@/components/context/auth";
 
 const ExpenseList = ({
   expenses = [],
@@ -17,6 +24,12 @@ const ExpenseList = ({
   const totalPages = pagination?.totalPages || 1;
   const [deleteId, setDeleteId] = useState(null);
   const [isDeletePopup, setIsDeletePopup] = useState(false);
+  const [isHistoryPanelOpen, setIsHistoryPanelOpen] = useState(false);
+  const [isExportLoading, setIsExportLoading] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const { userInfo } = useAuth();
+  
 
   const handleDeleteClick = (id) => {
     setDeleteId(id);
@@ -34,12 +47,51 @@ const ExpenseList = ({
     setDeleteId(null);
   };
 
+  const handleExportList = async () => {
+    setIsExportLoading(true)
+    try {
+      const response = await fetch(`http://localhost:3000/expenses/download`, {
+        method: "GET",
+        headers: {
+          'Content-Type': 'application/json', 'Authorization': localStorage.getItem('token')
+        }
+      });
+      const data = await response.json();
+      let a = document.createElement("a");
+      a.href = data.fileUrl;
+      a.click();
+      setToast({message:"File downloaded successfully",type:"success"});
+
+    } catch (err) {
+      console.log(err);
+      setToast({message:"Something went wrong",type:"error"});
+    } finally {
+      setIsExportLoading(false);
+    }
+  }
+
   return (
     <div className="mx-auto bg-white shadow-lg rounded-xl p-4 sm:p-6 min-h-[450px]">
-      <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-4">
-        Expense List
-      </h2>
-
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-700">
+          Expense List
+        </h2>
+        {userInfo?.isPremium && <div className="flex gap-4">
+          <FaTrophy className="cursor-pointer text-blue-950 opacity-70 hover:opacity-100"
+          title="Leaderboard"
+          onClick={() => setShowLeaderboard(true)}/>
+          <BsClockHistory className="cursor-pointer text-blue-950 opacity-70 hover:opacity-100"
+            title="Export History"
+            onClick={() => setIsHistoryPanelOpen(true)} />
+          {isExportLoading ?
+            <ImSpinner2
+            /> : <FaDownload
+              className="cursor-pointer text-blue-950 opacity-70 hover:opacity-100"
+              title="Export List"
+              onClick={() => handleExportList()}
+            />}
+        </div>}
+      </div>
       {expenses.length === 0 ? (
         <p className="text-gray-500 text-center py-6">
           No expenses added yet.
@@ -171,10 +223,9 @@ const ExpenseList = ({
                     key={page}
                     onClick={() => onPageChange(page)}
                     className={`px-3 py-1 rounded-md text-sm border
-                      ${
-                        currentPage === page
-                          ? "bg-blue-500 text-white border-blue-500"
-                          : "hover:bg-gray-100"
+                      ${currentPage === page
+                        ? "bg-blue-500 text-white border-blue-500"
+                        : "hover:bg-gray-100"
                       }`}
                   >
                     {page}
@@ -193,6 +244,13 @@ const ExpenseList = ({
               </button>
             </div>
           </div>
+          {toast && (
+            <Toast
+              message={toast.message}
+              type={toast.type}
+              onClose={() => setToast(null)}
+            />
+          )}
         </>
       )}
 
@@ -200,7 +258,16 @@ const ExpenseList = ({
         open={isDeletePopup}
         onClose={handleCancelDelete}
         onDelete={handleConfirmDelete}
+        title={"Delete Expense"}
+        message={"Are you sure you want to delete this expense?"}
       />
+      {/* Export History Side Panel */}
+      <ExportHistoryPanel
+        isOpen={isHistoryPanelOpen}
+        onClose={() => setIsHistoryPanelOpen(false)}
+      />
+      <LeaderboardModal open={showLeaderboard} onClose={setShowLeaderboard} />
+
     </div>
   );
 };

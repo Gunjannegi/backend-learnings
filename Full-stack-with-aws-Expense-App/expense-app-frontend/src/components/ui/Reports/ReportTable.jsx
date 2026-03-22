@@ -34,9 +34,9 @@ const ReportTable = ({ title, columnLabel, data = [], fileName }) => {
   }, [data, currentPage, rowsPerPage]);
 
   // CSV Download
-  const downloadCSV = () => {
+  const downloadCSV = async () => {
     if (!data.length) return;
-
+   
     const headers = [columnLabel, "Total Expense"];
     const rows = data.map((item) => [item.label, item.amount]);
 

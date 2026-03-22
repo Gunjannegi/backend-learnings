@@ -1,7 +1,10 @@
+const { Body } = require("sib-api-v3-sdk");
 const Expense = require("../models/expense");
 const User = require("../models/user");
 const sequelize = require("../utils/db-connection");
-
+const S3Services = require("../services/s3Services");
+const UserServices = require('../services/userServices');
+const FileDownloaded = require("../models/fileDownloaded");
 const addExpense = async (req, res) => {
     const t = await sequelize.transaction();
 
@@ -116,4 +119,24 @@ const deleteExpense = async (req, res) => {
     }
 };
 
-module.exports = { addExpense, getAllExpenses, updateExpense, deleteExpense }
+
+const downloadExpense = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const expenses = await UserServices.getExpense(req); 
+        console.log(expenses)
+        // Expense.findAll({ where: { UserId: userId } });
+        const stringifiedExpenses = JSON.stringify(expenses);
+        const filename = `Expense${userId}/${new Date()}.txt`;
+        const fileUrl = await S3Services.uploadToS3(stringifiedExpenses, filename);
+        await FileDownloaded.create({url:fileUrl, UserId:userId});
+        res.status(200).json({ fileUrl, success: true })
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).send({message:err});
+    }
+
+};
+
+module.exports = { addExpense, getAllExpenses, updateExpense, deleteExpense, downloadExpense }

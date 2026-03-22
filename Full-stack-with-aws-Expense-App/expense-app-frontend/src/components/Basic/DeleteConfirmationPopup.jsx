@@ -2,19 +2,19 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import Toast from "./Toast";
 
-const DeleteConfirmationPopup = ({ open, onClose, onDelete }) => {
-    const [toast, setToast] = useState(null);
+const DeleteConfirmationPopup = ({ open, onClose, onDelete, title, message }) => {
+    
 
     return (
         <>
             <Dialog open={open} onOpenChange={onClose}>
                 <DialogContent className="sm:max-w-lg bg-white text-gray-800">
                     <DialogHeader className="border-b pb-3">
-                        <DialogTitle>Delete Expense</DialogTitle>
+                        <DialogTitle>{title}</DialogTitle>
                     </DialogHeader>
 
                     <div className="font-medium">
-                        Are you sure you want to delete this expense?
+                        {message}
                     </div>
 
                     <div className="mt-2 flex justify-end gap-4">
@@ -34,13 +34,7 @@ const DeleteConfirmationPopup = ({ open, onClose, onDelete }) => {
                 </DialogContent>
             </Dialog>
 
-            {toast && (
-                <Toast
-                    message={toast.message}
-                    type={toast.type}
-                    onClose={() => setToast(null)}
-                />
-            )}
+          
         </>
     );
 };

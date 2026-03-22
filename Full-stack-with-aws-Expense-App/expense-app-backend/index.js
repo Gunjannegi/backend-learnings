@@ -13,9 +13,11 @@ const paymentRoutes = require('./routes/paymentRoutes');
 const premiumRoutes = require('./routes/premiumRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 const passwordRoutes = require('./routes/passwordRoutes');
+const exportRoutes = require('./routes/exportRoutes');
 const sequelize = require('./utils/db-connection');
 require("./models/user");
 require("./models/expense");
+require("./models/fileDownloaded")
 const accessLogStream = fs.createWriteStream(path.join(__dirname,'access.log'),{flags:'a'})
 
 app.use(express.urlencoded({ extended: true }));
@@ -29,6 +31,7 @@ app.use('/payment', paymentRoutes);
 app.use('/premium', premiumRoutes);
 app.use('/ask', aiRoutes);
 app.use('/password', passwordRoutes);
+app.use('/exports',exportRoutes);
 
 sequelize.sync().then(() => {
   app.listen(process.env.PORT, () => {

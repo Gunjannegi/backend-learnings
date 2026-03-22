@@ -4,14 +4,11 @@ import { useAuth } from "./context/auth";
 import { IoDiamondOutline, IoMenu, IoClose } from "react-icons/io5";
 import { initializeSDK } from "../lib/cashfree";
 import { FaCrown } from "react-icons/fa";
-import { HiSparkles } from "react-icons/hi";
 import { useState } from "react";
-import LeaderboardModal from "./LeaderboardModal";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const { logout, userInfo } = useAuth();
-  const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { pathname } = useLocation();
 
@@ -41,28 +38,8 @@ const Navbar = () => {
 
   return (
     <>
-      {/* PREMIUM BANNER */}
-      {userInfo?.isPremium && (
-        <div className="flex justify-between items-center px-4 py-2 bg-linear-to-br from-yellow-400 via-yellow-300 to-yellow-600 text-amber-900 text-sm sticky top-0">
-          <div className="flex items-center gap-2 font-semibold">
-            <FaCrown />
-            <HiSparkles />
-            Premium User
-            <HiSparkles />
-            <FaCrown />
-          </div>
-
-          <button
-            onClick={() => setShowLeaderboard(true)}
-            className="bg-amber-900/20 hover:bg-amber-900/30 px-2 py-1 rounded-lg"
-          >
-            Leaderboard
-          </button>
-        </div>
-      )}
-
       {/* NAVBAR */}
-      <nav className="bg-blue-950 text-white px-4 py-3 sticky top-11">
+      <nav className="bg-blue-950 text-white px-4 py-3 sticky top-0">
         <div className="flex items-center justify-between">
           {/* LEFT SIDE */}
           <div className="flex items-center gap-4">
@@ -81,24 +58,26 @@ const Navbar = () => {
             <div className="hidden md:flex gap-3">
               <Link
                 to="/dashboard"
-                className={`px-3 py-1 rounded ${
-                  pathname === "/dashboard" ? "bg-gray-500" : ""
-                }`}
+                className={`px-3 py-1 rounded ${pathname === "/dashboard" ? "bg-gray-500" : ""
+                  }`}
               >
                 Dashboard
               </Link>
 
               {userInfo?.isPremium && (
-                <Link
-                  to="/reports"
-                  className={`px-3 py-1 rounded ${
-                    pathname === "/reports" ? "bg-gray-500" : ""
-                  }`}
-                >
-                  Reports
-                </Link>
+                  <Link
+                    to="/reports"
+                    className={`px-3 py-1 rounded ${pathname === "/reports" ? "bg-gray-500" : ""
+                      }`}
+                  >
+                    Reports
+                  </Link>
               )}
             </div>
+            {userInfo?.isPremium && <div className="flex items-center gap-2 font-semibold bg-yellow-400 rounded-2xl text-sm text-black px-4 py-1">
+              <FaCrown className="" />
+              Pro
+            </div>}
           </div>
 
           {/* RIGHT SIDE */}
@@ -151,7 +130,6 @@ const Navbar = () => {
         )}
       </nav>
 
-      <LeaderboardModal open={showLeaderboard} onClose={setShowLeaderboard} />
     </>
   );
 };

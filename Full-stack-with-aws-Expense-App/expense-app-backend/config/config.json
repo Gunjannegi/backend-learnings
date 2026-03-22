@@ -3,21 +3,21 @@
     "username": "${DB_USER}",
     "password": "${DB_PASSWORD}",
     "database": "${DB_NAME}",
-    "host": "${DB_HOST}",
+    "host": "${RDS_ENDPOINT}",
     "dialect": "mysql"
   },
   "test": {
     "username": "${DB_USER}",
     "password": null,
     "database": "${DB_NAME_TEST}",
-    "host": "${DB_HOST}",
+    "host": "${RDS_ENDPOINT}",
     "dialect": "mysql"
   },
   "production": {
     "username": "${DB_USER}",
     "password": null,
     "database": "${DB_NAME_PRODUCTION}",
-    "host": "${DB_HOST}",
+    "host": "${RDS_ENDPOINT}",
     "dialect": "mysql"
   }
 }

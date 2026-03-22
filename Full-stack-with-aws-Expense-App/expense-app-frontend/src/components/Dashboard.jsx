@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import ExpenseForm from "./ExpenseForm";
-import ExpenseList from "./ExpenseList";
+import ExpenseForm from "./ui/Expense/ExpenseForm";
+import ExpenseList from "./ui/Expense/ExpenseList";
 
 const Dashboard = () => {
   const [expenseData, setExpenseData] = useState({});

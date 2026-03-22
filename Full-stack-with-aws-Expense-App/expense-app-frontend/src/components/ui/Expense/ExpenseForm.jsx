@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Toast from "./Basic/Toast";
+import Toast from "../../Basic/Toast";
 
 const ExpenseForm = ({ getExpenses, editExpenseData }) => {
     const [formData, setFormData] = useState({

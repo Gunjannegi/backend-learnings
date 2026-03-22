@@ -9,7 +9,8 @@ export const getLeaderboardData = async (req, res) => {
         'id',
         'username',
         'totalExpense'
-      ]
+      ],
+      order: [['totalExpense', 'DESC']]
     });
 
     if (leaderboard.length === 0) {
